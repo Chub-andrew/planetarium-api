@@ -65,12 +65,10 @@ class AstronomyShowSerializer(serializers.ModelSerializer):
         )
 
 
-class AstronomyShowListSerializer(AstronomyShowSerializer):
-    name = AstronomyShowSerializer()
-
+class AstronomyShowImageSerializer(serializers.ModelSerializer):
     class Meta:
-        model = AstronomyShow
-        fields = ("id", "title", "description", "image")
+        model: AstronomyShow
+        fields = ("id", "image")
 
 
 class TicketSerializer(serializers.ModelSerializer):
@@ -105,6 +103,7 @@ class ShowSessionDetailSerializer(ShowSessionSerializer):
     taken_places = TicketSeatsSerializer(
         source="tickets", many=True, read_only=True
     )
+
 
     class Meta:
         model = ShowSession

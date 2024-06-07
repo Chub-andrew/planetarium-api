@@ -33,11 +33,11 @@ class ShowThemeViewSet(
     authentication_classes = (TokenAuthentication,)
     permission_classes = (IsAdminOrIsAuthenticateOrReadOnly,)
 
-    # def get_permissions(self):
-    #     if self.action in ('list', "retrieve"):
-    #         return (IsAuthenticated(),)
-    #
-    #     return super().get_permissions()
+    def get_permissions(self):
+        if self.action in ('list', "retrieve"):
+            return (IsAuthenticated(),)
+
+        return super().get_permissions()
 
 
 class PlanetariumDomeViewSet(
@@ -52,6 +52,8 @@ class PlanetariumDomeViewSet(
 class AstronomyShowViewSet(viewsets.ModelViewSet):
     queryset = AstronomyShow.objects.prefetch_related("theme")
     serializer_class = AstronomyShowSerializer
+    authentication_classes = (TokenAuthentication,)
+    permission_classes = (IsAdminOrIsAuthenticateOrReadOnly,)
 
 
 class ReservationViewSet(
@@ -65,20 +67,20 @@ class ReservationViewSet(
     )
     serializer_class = ReservationSerializer
     # pagination_class = OrderPagination
-    # authentication_classes = (TokenAuthentication,)
-    # permission_classes = (IsAuthenticated,)
+    authentication_classes = (TokenAuthentication,)
+    permission_classes = (IsAuthenticated,)
 
-    # def get_queryset(self):
-    #     return Reservation.objects.filter(user=self.request.user)
-    #
-    # def get_serializer_class(self):
-    #     if self.action == "list":
-    #         return ReservationListSerializer
-    #
-    #     return ReservationSerializer
-    #
-    # def perform_create(self, serializer):
-    #     serializer.save(user=self.request.user)
+    def get_queryset(self):
+        return Reservation.objects.filter(user=self.request.user)
+
+    def get_serializer_class(self):
+        if self.action == "list":
+            return ReservationListSerializer
+
+        return ReservationSerializer
+
+    def perform_create(self, serializer):
+        serializer.save(user=self.request.user)
 
 
 class ShowSessionViewSet(viewsets.ModelViewSet):
@@ -93,8 +95,8 @@ class ShowSessionViewSet(viewsets.ModelViewSet):
         )
     )
     serializer_class = ShowSessionSerializer
-    # authentication_classes = (TokenAuthentication,)
-    # permission_classes = (IsAdminOrIfAuthenticatedReadOnly,)
+    authentication_classes = (TokenAuthentication,)
+    permission_classes = (IsAdminOrIsAuthenticateOrReadOnly,)
 
     def get_queryset(self):
         date = self.request.query_params.get("date")
