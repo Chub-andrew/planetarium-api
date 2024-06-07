@@ -3,11 +3,14 @@ from datetime import datetime
 
 from django.db.models import F, Count
 from django.shortcuts import render
+from rest_framework.authentication import TokenAuthentication
 from rest_framework.decorators import action
+from rest_framework.permissions import IsAuthenticated, IsAdminUser
 from rest_framework.response import Response
 from rest_framework.viewsets import GenericViewSet
 
 from planetarium_api.models import ShowTheme, PlanetariumDome, Reservation, ShowSession, AstronomyShow
+from planetarium_api.permissions import IsAdminOrIsAuthenticateOrReadOnly
 
 from planetarium_api.serializers import (
     ShowThemeSerializer,
@@ -27,6 +30,14 @@ class ShowThemeViewSet(
 ):
     queryset = ShowTheme.objects.all()
     serializer_class = ShowThemeSerializer
+    authentication_classes = (TokenAuthentication,)
+    permission_classes = (IsAdminOrIsAuthenticateOrReadOnly,)
+
+    # def get_permissions(self):
+    #     if self.action in ('list', "retrieve"):
+    #         return (IsAuthenticated(),)
+    #
+    #     return super().get_permissions()
 
 
 class PlanetariumDomeViewSet(
