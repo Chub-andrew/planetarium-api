@@ -19,7 +19,7 @@ def show_image_file_path(instance, filename):
 
 
 class PlanetariumDome(models.Model):
-    name = models.CharField(max_length=255)
+    name = models.CharField(max_length=255, unique=True)
     rows = models.IntegerField(validators=[validate_positive])
     seats_in_row = models.IntegerField(validators=[validate_positive])
 
@@ -82,18 +82,18 @@ class Ticket(models.Model):
         ordering = ["row", "seat"]
 
     @staticmethod
-    def validate_ticket(row, seat, cinema_hall, error_to_raise):
-        for ticket_attr_value, ticket_attr_name, cinema_hall_attr_name in [
+    def validate_ticket(row, seat, planetarium_dome, error_to_raise):
+        for ticket_attr_value, ticket_attr_name, dome_attr_name in [
             (row, "row", "rows"),
             (seat, "seat", "seats_in_row"),
         ]:
-            count_attrs = getattr(cinema_hall, cinema_hall_attr_name)
+            count_attrs = getattr(planetarium_dome, dome_attr_name)
             if not (1 <= ticket_attr_value <= count_attrs):
                 raise error_to_raise(
                     {
                         ticket_attr_name: f"{ticket_attr_name} "
                         f"number must be in available range: "
-                        f"(1, {cinema_hall_attr_name}): "
+                        f"(1, {dome_attr_name}): "
                         f"(1, {count_attrs})"
                     }
                 )
@@ -106,17 +106,9 @@ class Ticket(models.Model):
             ValidationError,
         )
 
-    def save(
-        self,
-        force_insert=False,
-        force_update=False,
-        using=None,
-        update_fields=None,
-    ):
+    def save(self, *args, **kwargs):
         self.full_clean()
-        return super(Ticket, self).save(
-            force_insert, force_update, using, update_fields
-        )
+        super(Ticket, self).save(*args, **kwargs)
 
     def __str__(self):
-        return f"{self.row} {self.seat}"
+        return f"Row {self.row}, Seat {self.seat} for {self.show_session}"
