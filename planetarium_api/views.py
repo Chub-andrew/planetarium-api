@@ -3,13 +3,15 @@ from datetime import datetime
 
 from django.db.models import F, Count
 from django.shortcuts import render
+from drf_spectacular.utils import extend_schema, OpenApiParameter
 from rest_framework.authentication import TokenAuthentication
 from rest_framework.decorators import action
 from rest_framework.permissions import IsAuthenticated, IsAdminUser
 from rest_framework.response import Response
 from rest_framework.viewsets import GenericViewSet
 
-from planetarium_api.models import ShowTheme, PlanetariumDome, Reservation, ShowSession, AstronomyShow
+from planetarium_api.models import ShowTheme, PlanetariumDome, Reservation, \
+    ShowSession, AstronomyShow, Ticket
 from planetarium_api.permissions import IsAdminOrIsAuthenticateOrReadOnly
 
 from planetarium_api.serializers import (
@@ -18,7 +20,8 @@ from planetarium_api.serializers import (
     ReservationSerializer,
     ReservationListSerializer, ShowSessionSerializer,
     ShowSessionListSerializer, ShowSessionDetailSerializer,
-    AstronomyShowSerializer
+    AstronomyShowSerializer, AstronomyShowListSerializer, TicketSerializer,
+    AstronomyShowDetailSerializer
 )
 from rest_framework import viewsets, mixins, status
 
@@ -49,11 +52,66 @@ class PlanetariumDomeViewSet(
     serializer_class = PlanetariumDomeSerializer
 
 
-class AstronomyShowViewSet(viewsets.ModelViewSet):
+class AstronomyShowViewSet(
+    mixins.ListModelMixin,
+    mixins.CreateModelMixin,
+    mixins.RetrieveModelMixin,
+    viewsets.GenericViewSet,
+):
     queryset = AstronomyShow.objects.prefetch_related("theme")
     serializer_class = AstronomyShowSerializer
     authentication_classes = (TokenAuthentication,)
     permission_classes = (IsAdminOrIsAuthenticateOrReadOnly,)
+
+    @staticmethod
+    def _params_to_ints(qs):
+        """Converts a list of string IDs to a list of integers"""
+        return [int(str_id) for str_id in qs.split(",")]
+
+    def get_queryset(self):
+        """Retrieve the astronomy shows with filters"""
+        title = self.request.query_params.get("title")
+        theme_ids = self.request.query_params.get("themes")
+
+        queryset = self.queryset
+
+        if title:
+            queryset = queryset.filter(title__icontains=title)
+
+        if theme_ids:
+            theme_ids = self._params_to_ints(theme_ids)
+            queryset = queryset.filter(theme__id__in=theme_ids)
+
+        return queryset.distinct()
+
+    def get_serializer_class(self):
+        if self.action == "list":
+            return AstronomyShowListSerializer
+
+        if self.action == "retrieve":
+            return AstronomyShowDetailSerializer
+
+        return AstronomyShowSerializer
+
+    @extend_schema(
+        parameters=[
+            OpenApiParameter(
+                name="title",
+                type=str,
+                description="Filter astronomy shows by title",
+                location=OpenApiParameter.QUERY,
+            ),
+            OpenApiParameter(
+                name="themes",
+                type={"type": "array", "items": {"type": "number"}},
+                description="Filter astronomy shows by theme IDs (ex. ?themes=1,2)",
+                location=OpenApiParameter.QUERY,
+            ),
+        ]
+    )
+    def list(self, request, *args, **kwargs):
+        """Get list of astronomy shows"""
+        return super().list(request, *args, **kwargs)
 
 
 class ReservationViewSet(
@@ -142,3 +200,8 @@ class ShowSessionViewSet(viewsets.ModelViewSet):
             "planetarium_dome": dome.id,
             "seating": placement
         })
+
+
+class TicketViewSet(viewsets.ModelViewSet):
+    queryset = Ticket.objects.all()
+    serializer_class = TicketSerializer

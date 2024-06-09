@@ -3,7 +3,8 @@ from rest_framework import routers
 
 from planetarium_api.views import (
     ShowThemeViewSet,
-    PlanetariumDomeViewSet, ShowSessionViewSet, AstronomyShowViewSet, ReservationViewSet
+    PlanetariumDomeViewSet, ShowSessionViewSet, AstronomyShowViewSet,
+    ReservationViewSet, TicketViewSet
 )
 
 router = routers.DefaultRouter()
@@ -12,6 +13,7 @@ router.register("Planetarium_Dome", PlanetariumDomeViewSet)
 router.register("Show_Sessions", ShowSessionViewSet)
 router.register("Astronomy_Show", AstronomyShowViewSet)
 router.register("Reservation", ReservationViewSet)
+router.register("Ticket", TicketViewSet)
 
 urlpatterns = [path("", include(router.urls))]
 
