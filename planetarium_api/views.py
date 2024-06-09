@@ -33,7 +33,7 @@ class ShowThemeViewSet(
 ):
     queryset = ShowTheme.objects.all()
     serializer_class = ShowThemeSerializer
-    authentication_classes = (TokenAuthentication,)
+    # authentication_classes = (TokenAuthentication,)
     permission_classes = (IsAdminOrIsAuthenticateOrReadOnly,)
 
     def get_permissions(self):
@@ -44,9 +44,7 @@ class ShowThemeViewSet(
 
 
 class PlanetariumDomeViewSet(
-    mixins.CreateModelMixin,
-    mixins.ListModelMixin,
-    GenericViewSet,
+    viewsets.ModelViewSet
 ):
     queryset = PlanetariumDome.objects.all()
     serializer_class = PlanetariumDomeSerializer
@@ -60,7 +58,7 @@ class AstronomyShowViewSet(
 ):
     queryset = AstronomyShow.objects.prefetch_related("theme")
     serializer_class = AstronomyShowSerializer
-    authentication_classes = (TokenAuthentication,)
+    # authentication_classes = (TokenAuthentication,)
     permission_classes = (IsAdminOrIsAuthenticateOrReadOnly,)
 
     @staticmethod
@@ -125,7 +123,7 @@ class ReservationViewSet(
     )
     serializer_class = ReservationSerializer
     # pagination_class = OrderPagination
-    authentication_classes = (TokenAuthentication,)
+    # authentication_classes = (TokenAuthentication,)
     permission_classes = (IsAuthenticated,)
 
     def get_queryset(self):
@@ -153,7 +151,7 @@ class ShowSessionViewSet(viewsets.ModelViewSet):
         )
     )
     serializer_class = ShowSessionSerializer
-    authentication_classes = (TokenAuthentication,)
+    # authentication_classes = (TokenAuthentication,)
     permission_classes = (IsAdminOrIsAuthenticateOrReadOnly,)
 
     def get_queryset(self):
