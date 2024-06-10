@@ -186,12 +186,12 @@ class ShowSessionViewSet(viewsets.ModelViewSet):
         seats_in_row = dome.seats_in_row
         tickets = show_session.tickets.all()
 
-        placement = [[0 for _ in range(seats_in_row)] for _ in range(rows)]
+        placement = [["-" for _ in range(seats_in_row)] for _ in range(rows)]
 
         for ticket in tickets:
             row_index = ticket.row - 1
             seat_index = ticket.seat - 1
-            placement[row_index][seat_index] = 1
+            placement[row_index][seat_index] = "+"
 
         return Response({
             "show_session": show_session.id,

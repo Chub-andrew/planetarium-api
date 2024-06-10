@@ -1,5 +1,8 @@
+import os
 from datetime import timedelta
 from pathlib import Path
+
+from dotenv import load_dotenv
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -34,9 +37,11 @@ INSTALLED_APPS = [
     'rest_framework',
     'rest_framework.authtoken',
     'drf_spectacular',
-    # 'debug_toolbar',
+    'debug_toolbar',
     'planetarium_api',
-    'user'
+    'user',
+    'telegram_bot',
+    'django_extensions'
 ]
 
 AUTH_USER_MODEL = 'user.User'
@@ -129,6 +134,11 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 MEDIA_ROOT = BASE_DIR / "media"
 
 MEDIA_URL = "/media/"
+
+load_dotenv()
+
+
+TELEGRAM_TOKEN = os.getenv('TELEGRAM_TOKEN')
 
 
 REST_FRAMEWORK = {

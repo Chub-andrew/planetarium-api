@@ -81,4 +81,13 @@ class AdminUserTests(TestCase):
         self.client.force_authenticate(user=self.user)
 
     def test_planetarium_dome_create(self):
-
+        payload = {
+            "name": "GreenLantern-home",
+            "rows": 5,
+            "seats_in_row": 6,
+        }
+        res = self.client.post(URL, payload)
+        planetarium = PlanetariumDome.objects.get(id=res.data["id"])
+        self.assertEqual(res.status_code, status.HTTP_201_CREATED)
+        for key in payload:
+            self.assertEqual(payload[key], getattr(planetarium, key))
