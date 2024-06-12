@@ -3,7 +3,8 @@ from datetime import datetime
 
 from django.db.models import F, Count
 from django.shortcuts import render
-from drf_spectacular.utils import extend_schema, OpenApiParameter
+from drf_spectacular.utils import extend_schema, OpenApiParameter, \
+    OpenApiResponse
 from rest_framework.authentication import TokenAuthentication
 from rest_framework.decorators import action
 from rest_framework.permissions import IsAuthenticated, IsAdminUser
@@ -29,7 +30,7 @@ from rest_framework import viewsets, mixins, status
 class ShowThemeViewSet(
     mixins.CreateModelMixin,
     mixins.ListModelMixin,
-    GenericViewSet,
+    viewsets.GenericViewSet,
 ):
     queryset = ShowTheme.objects.all()
     serializer_class = ShowThemeSerializer
@@ -38,16 +39,58 @@ class ShowThemeViewSet(
 
     def get_permissions(self):
         if self.action in ('list', "retrieve"):
-            return (IsAuthenticated(),)
-
+            return [IsAuthenticated()]
         return super().get_permissions()
 
+    @extend_schema(
+        responses={
+            200: OpenApiResponse(response=ShowThemeSerializer, description="List of show themes"),
+        }
+    )
+    def list(self, request, *args, **kwargs):
+        """Get list of show themes"""
+        return super().list(request, *args, **kwargs)
 
-class PlanetariumDomeViewSet(
-    viewsets.ModelViewSet
-):
+    @extend_schema(
+        request=ShowThemeSerializer,
+        responses={
+            201: OpenApiResponse(response=ShowThemeSerializer, description="Show theme created successfully"),
+            400: OpenApiResponse(description="Bad Request"),
+        },
+    )
+    def create(self, request, *args, **kwargs):
+        """Create a new show theme"""
+        return super().create(request, *args, **kwargs)
+
+
+class PlanetariumDomeViewSet(viewsets.ModelViewSet):
     queryset = PlanetariumDome.objects.all()
     serializer_class = PlanetariumDomeSerializer
+
+    @extend_schema(
+        parameters=[
+            OpenApiParameter(
+                name="name",
+                type=str,
+                description="Filter planetarium dome by name",
+                location=OpenApiParameter.QUERY,
+            ),
+        ]
+    )
+    def list(self, request, *args, **kwargs):
+        """Get list of planetarium domes"""
+        return super().list(request, *args, **kwargs)
+
+    @extend_schema(
+        request=PlanetariumDomeSerializer,
+        responses={
+            201: OpenApiResponse(response=PlanetariumDomeSerializer, description="Planetarium dome created successfully"),
+            400: OpenApiResponse(description="Bad Request"),
+        },
+    )
+    def create(self, request, *args, **kwargs):
+        """Create a new planetarium dome"""
+        return super().create(request, *args, **kwargs)
 
 
 class AstronomyShowViewSet(
@@ -111,11 +154,23 @@ class AstronomyShowViewSet(
         """Get list of astronomy shows"""
         return super().list(request, *args, **kwargs)
 
+    @extend_schema(
+        request=AstronomyShowSerializer,
+        responses={
+            201: OpenApiResponse(response=AstronomyShowSerializer,
+                                 description="Astronomy show created successfully"),
+            400: OpenApiResponse(description="Bad Request"),
+        },
+    )
+    def create(self, request, *args, **kwargs):
+        """Create a new astronomy show"""
+        return super().create(request, *args, **kwargs)
+
 
 class ReservationViewSet(
     mixins.ListModelMixin,
     mixins.CreateModelMixin,
-    GenericViewSet,
+    viewsets.GenericViewSet,
 ):
     queryset = Reservation.objects.prefetch_related(
         "tickets__show_session__astronomy_show",
@@ -132,11 +187,38 @@ class ReservationViewSet(
     def get_serializer_class(self):
         if self.action == "list":
             return ReservationListSerializer
-
         return ReservationSerializer
 
     def perform_create(self, serializer):
         serializer.save(user=self.request.user)
+
+    @extend_schema(
+        parameters=[
+            OpenApiParameter(
+                name="user",
+                type=str,
+                description="Filter reservations by user",
+                location=OpenApiParameter.QUERY,
+            ),
+        ],
+        responses={
+            200: OpenApiResponse(response=ReservationListSerializer, description="List of reservations"),
+        },
+    )
+    def list(self, request, *args, **kwargs):
+        """Get list of reservations"""
+        return super().list(request, *args, **kwargs)
+
+    @extend_schema(
+        request=ReservationSerializer,
+        responses={
+            201: OpenApiResponse(response=ReservationSerializer, description="Reservation created successfully"),
+            400: OpenApiResponse(description="Bad Request"),
+        },
+    )
+    def create(self, request, *args, **kwargs):
+        """Create a new reservation"""
+        return super().create(request, *args, **kwargs)
 
 
 class ShowSessionViewSet(viewsets.ModelViewSet):
@@ -203,3 +285,37 @@ class ShowSessionViewSet(viewsets.ModelViewSet):
 class TicketViewSet(viewsets.ModelViewSet):
     queryset = Ticket.objects.all()
     serializer_class = TicketSerializer
+
+    @extend_schema(
+        parameters=[
+            OpenApiParameter(
+                name="user",
+                type=str,
+                description="Filter tickets by user",
+                location=OpenApiParameter.QUERY,
+            ),
+            OpenApiParameter(
+                name="show_session",
+                type=str,
+                description="Filter tickets by show session",
+                location=OpenApiParameter.QUERY,
+            ),
+        ],
+        responses={
+            200: OpenApiResponse(response=TicketSerializer, description="List of tickets"),
+        },
+    )
+    def list(self, request, *args, **kwargs):
+        """Get list of tickets"""
+        return super().list(request, *args, **kwargs)
+
+    @extend_schema(
+        request=TicketSerializer,
+        responses={
+            201: OpenApiResponse(response=TicketSerializer, description="Ticket created successfully"),
+            400: OpenApiResponse(description="Bad Request"),
+        },
+    )
+    def create(self, request, *args, **kwargs):
+        """Create a new ticket"""
+        return super().create(request, *args, **kwargs)
