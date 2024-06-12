@@ -11,7 +11,9 @@ URL = reverse("planetarium:planetarium-dome-list")
 
 
 def detail_url(planetarium_id):
-    return reverse("planetarium:planetarium-dome-detail", args=(planetarium_id,))
+    return reverse(
+        "planetarium:planetarium-dome-detail",
+        args=(planetarium_id,))
 
 
 def sample_planetarium_dome(**params) -> PlanetariumDome:

@@ -44,7 +44,10 @@ class ShowThemeViewSet(
 
     @extend_schema(
         responses={
-            200: OpenApiResponse(response=ShowThemeSerializer, description="List of show themes"),
+            200: OpenApiResponse(
+                response=ShowThemeSerializer,
+                description="List of show themes"
+            ),
         }
     )
     def list(self, request, *args, **kwargs):
@@ -54,7 +57,10 @@ class ShowThemeViewSet(
     @extend_schema(
         request=ShowThemeSerializer,
         responses={
-            201: OpenApiResponse(response=ShowThemeSerializer, description="Show theme created successfully"),
+            201: OpenApiResponse(
+                response=ShowThemeSerializer,
+                description="Show theme created successfully"
+            ),
             400: OpenApiResponse(description="Bad Request"),
         },
     )
@@ -84,7 +90,10 @@ class PlanetariumDomeViewSet(viewsets.ModelViewSet):
     @extend_schema(
         request=PlanetariumDomeSerializer,
         responses={
-            201: OpenApiResponse(response=PlanetariumDomeSerializer, description="Planetarium dome created successfully"),
+            201: OpenApiResponse(
+                response=PlanetariumDomeSerializer,
+                description="Planetarium dome created successfully"
+            ),
             400: OpenApiResponse(description="Bad Request"),
         },
     )
@@ -145,7 +154,8 @@ class AstronomyShowViewSet(
             OpenApiParameter(
                 name="themes",
                 type={"type": "array", "items": {"type": "number"}},
-                description="Filter astronomy shows by theme IDs (ex. ?themes=1,2)",
+                description="Filter astronomy shows by theme IDs "
+                            "(ex. ?themes=1,2)",
                 location=OpenApiParameter.QUERY,
             ),
         ]
@@ -158,7 +168,8 @@ class AstronomyShowViewSet(
         request=AstronomyShowSerializer,
         responses={
             201: OpenApiResponse(response=AstronomyShowSerializer,
-                                 description="Astronomy show created successfully"),
+                                 description="Astronomy show "
+                                             "created successfully"),
             400: OpenApiResponse(description="Bad Request"),
         },
     )
@@ -202,7 +213,10 @@ class ReservationViewSet(
             ),
         ],
         responses={
-            200: OpenApiResponse(response=ReservationListSerializer, description="List of reservations"),
+            200: OpenApiResponse(
+                response=ReservationListSerializer,
+                description="List of reservations"
+            ),
         },
     )
     def list(self, request, *args, **kwargs):
@@ -212,7 +226,10 @@ class ReservationViewSet(
     @extend_schema(
         request=ReservationSerializer,
         responses={
-            201: OpenApiResponse(response=ReservationSerializer, description="Reservation created successfully"),
+            201: OpenApiResponse(
+                response=ReservationSerializer,
+                description="Reservation created successfully"
+            ),
             400: OpenApiResponse(description="Bad Request"),
         },
     )
@@ -227,7 +244,9 @@ class ShowSessionViewSet(viewsets.ModelViewSet):
         .select_related("astronomy_show", "planetarium_dome")
         .annotate(
             tickets_available=(
-                F("planetarium_dome__rows") * F("planetarium_dome__seats_in_row")
+                F(
+                    "planetarium_dome__rows"
+                ) * F("planetarium_dome__seats_in_row")
                 - Count("tickets")
             )
         )
@@ -302,7 +321,10 @@ class TicketViewSet(viewsets.ModelViewSet):
             ),
         ],
         responses={
-            200: OpenApiResponse(response=TicketSerializer, description="List of tickets"),
+            200: OpenApiResponse(
+                response=TicketSerializer,
+                description="List of tickets"
+            ),
         },
     )
     def list(self, request, *args, **kwargs):
@@ -312,7 +334,10 @@ class TicketViewSet(viewsets.ModelViewSet):
     @extend_schema(
         request=TicketSerializer,
         responses={
-            201: OpenApiResponse(response=TicketSerializer, description="Ticket created successfully"),
+            201: OpenApiResponse(
+                response=TicketSerializer,
+                description="Ticket created successfully"
+            ),
             400: OpenApiResponse(description="Bad Request"),
         },
     )

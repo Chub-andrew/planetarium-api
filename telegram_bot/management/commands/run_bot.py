@@ -31,7 +31,9 @@ class Command(BaseCommand):
 
         bot_name = self.updater.bot.get_me()["username"]
 
-        self.stdout.write(self.style.NOTICE(f"You can find me by name *{bot_name}* Hello!!!Ready to serve"))
+        self.stdout.write(self.style.NOTICE(
+            f"You can find me by name *{bot_name}* Hello!!!Ready to serve")
+        )
         self.updater.start_polling()
         self.updater.idle()
 

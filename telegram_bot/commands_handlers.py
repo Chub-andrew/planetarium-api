@@ -9,7 +9,10 @@ def start(update: Update, context: CallbackContext):
     user = update.effective_user
     print(f"Hello, {user}!!!")
     context.bot.send_message(
-        chat_id=update.effective_chat.id, text="I'm a bot, please talk to me! My commands:\n /astronomy_show \n /show_time \n /theme_show"
+        chat_id=update.effective_chat.id, text="I'm a bot, "
+                                               "please talk to me! "
+                                               "My commands:\n /astronomy_show"
+                                               " \n /show_time \n /theme_show"
     )
 
 
@@ -18,7 +21,8 @@ def astronomy_show(update: Update, context: CallbackContext):
     if astronomy_shows.exists():
         message = ""
         for show in astronomy_shows:
-            message += f"*{escape_markdown(show.title, version=2)}*\n{escape_markdown(show.description, version=2)}\n\n"
+            message += (f"*{escape_markdown(show.title, version=2)}*\n"
+                        f"{escape_markdown(show.description, version=2)}\n\n")
 
         context.bot.send_message(
             chat_id=update.effective_chat.id,
@@ -40,8 +44,10 @@ def show_time(update: Update, context: CallbackContext):
         for show in time_show:
             show_title = escape_markdown(show.astronomy_show.title, version=2)
             dome_name = escape_markdown(show.planetarium_dome.name, version=2)
-            show_time_str = escape_markdown(show.show_time.strftime('%Y-%m-%d %H:%M:%S'), version=2)
-            message += f"*{show_title}*\nDome: {dome_name}\nTime: {show_time_str}\n\n"
+            show_time_str = escape_markdown(show.show_time.strftime(
+                '%Y-%m-%d %H:%M:%S'), version=2)
+            message += (f"*{show_title}*\nDome: {dome_name}\nTime: "
+                        f"{show_time_str}\n\n")
         context.bot.send_message(
             chat_id=update.effective_chat.id,
             text=message,

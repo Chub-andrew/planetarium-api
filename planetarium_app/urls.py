@@ -8,7 +8,10 @@ from drf_spectacular.views import SpectacularAPIView, SpectacularSwaggerView, \
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path("api/planetarium/", include("planetarium_api.urls", namespace="planetarium")),
+    path("api/planetarium/", include(
+        "planetarium_api.urls",
+        namespace="planetarium"
+    )),
     path("api/user/", include("user.urls", namespace="user")),
     path("api/schema/", SpectacularAPIView.as_view(), name="schema"),
     path(
@@ -22,5 +25,5 @@ urlpatterns = [
         name="redoc",
     ),
     path("__debug__/", include("debug_toolbar.urls")),
-    path('', RedirectView.as_view(url='api/planetarium/', permanent=True)), #added this for automative loaded
+    path('', RedirectView.as_view(url='api/planetarium/', permanent=True)),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
