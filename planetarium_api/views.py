@@ -1,20 +1,16 @@
-import json
 from datetime import datetime
 
 from django.db.models import F, Count
-from django.shortcuts import render
 from drf_spectacular.utils import extend_schema, OpenApiParameter, \
     OpenApiResponse
-from rest_framework.authentication import TokenAuthentication
+from rest_framework import viewsets, mixins
 from rest_framework.decorators import action
-from rest_framework.permissions import IsAuthenticated, IsAdminUser
+from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
-from rest_framework.viewsets import GenericViewSet
 
 from planetarium_api.models import ShowTheme, PlanetariumDome, Reservation, \
     ShowSession, AstronomyShow, Ticket
 from planetarium_api.permissions import IsAdminOrIsAuthenticateOrReadOnly
-
 from planetarium_api.serializers import (
     ShowThemeSerializer,
     PlanetariumDomeSerializer,
@@ -24,7 +20,6 @@ from planetarium_api.serializers import (
     AstronomyShowSerializer, AstronomyShowListSerializer, TicketSerializer,
     AstronomyShowDetailSerializer
 )
-from rest_framework import viewsets, mixins, status
 
 
 class ShowThemeViewSet(
